@@ -143,3 +143,16 @@ Let's understand each line:
 | `"./modules/ec2"` | Relative path to our child module directory. |
 
 **Note:** A child module does not need to be deployed independently. It is commonly called and managed through its root module.
+## 4. Creating a Reusable Terraform Module
+4.1 Understanding the concept
+A root module can call a child module using a module block.
+
+```hcl
+module "ec2" {
+  source = "./modules/ec2"
+}
+```
+
+This tells Terraform where to find the child module, but it doesn't tell us what EC2 instance to create.
+
+
