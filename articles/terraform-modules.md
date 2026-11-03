@@ -1,58 +1,145 @@
-<h><b>Terraform Modules Explained: A Practical Guide</b></h>
-<br><br>
-<h>1. Introduction</h><br><br>
-When working with Terraform, we use configuration files to define and manage infrastructure as code (IaC) For example, we might create AWS resources such as EC2 instances, VPCs, Subnets, Security groups and S3 buckets. As our infrastructure grows, managing all these resources in a single configuration can become difficult. This is where Terraform Modules becomes useful.
+# Terraform Modules Explained: A Practical Guide
+
+## 1. Introduction
+
+When working with Terraform, we use configuration files to define and manage infrastructure as code (IaC).
+
+For example, we might create AWS resources such as EC2 instances, VPCs, subnets, security groups, and S3 buckets.
+
+As our infrastructure grows, managing all these resources in a single configuration can become difficult. This is where **Terraform modules** become useful.
 
 Terraform modules allow us to organize infrastructure code into reusable and manageable components. Instead of writing the same configuration repeatedly, we can create a module once and reuse it across different projects and environments.
 
 In this tutorial, we will explore Terraform modules, understand how they work, and build practical examples using AWS.
 
-<h>2. What is a Terraform Module</h> <br><br>
-A Terraform module is a collection of Terraform configuration files (.tf) stored together in a directory.
-It a reusable building block of infrastructure.
+---
+
+## 2. What Is a Terraform Module?
+
+A Terraform module is a collection of Terraform configuration files (`.tf`) stored together in a directory.
+
+It is a reusable building block for managing infrastructure.
+
 For example, imagine you frequently need to create EC2 instances. Instead of writing the EC2 configuration from scratch every time, you can organize that configuration into a module and reuse it whenever needed.
 
-    Module-Based Infrastructure
+### Module-Based Infrastructure
 
-                    Root Module
-                    (main.tf)
-   
-       EC2 Module  VPC Module  RDS Module
+A Terraform project can be organized into a root module that calls multiple child modules.
 
-terraform-project/</br>
-│</br>
-├── main.tf</br>
-├── variables.tf</br>
-├── outputs.tf</br>
-│</br>
-└── modules/</br>
-    └── ec2/</br>
-        ├── main.tf</br>
-        ├── variables.tf</br>
-        └── outputs.tf</br>
-The ec2 directory contains another Terraform modules.</br>
+For example:
 
-We call the first module the root module, and the ec2 module a child module when the root module calls it.
+```text
+terraform-project/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+│
+└── modules/
+    ├── ec2/
+    ├── vpc/
+    └── rds/
+```
 
-Important: A Terraform module doesn't have to contain all three files. It can consist of just one .tf file or multiple configuration files.
+The root module can call the EC2, VPC, and RDS modules to manage different infrastructure components.
 
-<h>Section 3: Root Modules vs. Child Modules</h><br><br>
-<h>1. What is a root module?<h><br>
-   The root module is the main Terraform working directory where you run Terraform commands.
-   For example, when you execute -
-   terraform init, terraform plan and terraform apply 
+### Example: EC2 Module Structure
 
-   Terraform uses the configuration files in your current working directory. The directory represents your root module. 
+The EC2 module might have the following structure:
 
-    terraform-project/</br>
-    │</br>
-    ├── main.tf</br>
-    ├── variables.tf</br>
-    └── outputs.tf</br>
-<br>
-<h>2. What is a child module?</h><br><br>
+```text
+terraform-project/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+│
+└── modules/
+    └── ec2/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+```
+
+The `ec2` directory contains another Terraform module.
+
+We call the first module the **root module**, and the `ec2` module a **child module** when the root module calls it.
+
+**Important:** A Terraform module doesn't have to contain all three files (`main.tf`, `variables.tf`, and `outputs.tf`). It can consist of just one `.tf` file or multiple configuration files.
+
+---
+
+## 3. Root Modules vs. Child Modules
+
+### 3.1 What Is a Root Module?
+
+The root module is the main Terraform working directory where you run Terraform commands.
+
+For example:
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+Terraform uses the configuration files in your current working directory. This directory represents your root module.
+
+Example:
+
+```text
+terraform-project/
+│
+├── main.tf
+├── variables.tf
+└── outputs.tf
+```
+
+### 3.2 What Is a Child Module?
+
 A child module is a Terraform module that is called by another module.
 
-For example, suppose your root module needs to create Ec2 instance. Instead of defining the EC2 resource directly in the root module, you can create a separate directory containing the EC@ configuration. 
+For example, suppose your root module needs to create an EC2 instance. Instead of defining the EC2 resource directly in the root module, you can create a separate directory containing the EC2 configuration.
 
+Example:
 
+```text
+terraform-project/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+│
+└── modules/
+    └── ec2/
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+```
+
+Here:
+
+- `terraform-project` is the root module.
+- `modules/ec2` is the child module.
+- The root module calls the child module using a `module` block.
+
+### 3.3 How Does the Root Module Call a Child Module?
+
+Inside the root module's `main.tf`, we can write:
+
+```hcl
+module "ec2" {
+  source = "./modules/ec2"
+}
+```
+
+Let's understand each line:
+
+| Configuration | Explanation |
+|---|---|
+| `module` | Tells Terraform that we are calling a module. |
+| `"ec2"` | The local name we give this module instance. |
+| `source` | Specifies where Terraform should find the module. |
+| `"./modules/ec2"` | Relative path to our child module directory. |
+
+**Note:** A child module does not need to be deployed independently. It is commonly called and managed through its root module.
