@@ -3,10 +3,13 @@
 ## 1. Introduction
  What Is a Terraform Module?
 
-A Terraform module is a collection of Terraform configuration files (`.tf`) stored together in a directory.
-It is a reusable building block for managing infrastructure.
+Modules help you create maintainable and standardized infrastructure by packaging commonly used resources together.
 
-For example, imagine you frequently need to create EC2 instances. Instead of writing the EC2 configuration from scratch every time, you can organize that configuration into a module and reuse it whenever needed.
+`Code Reusability` - Create standardized infrastructure patters that can be used across multiple projects and teams.
+
+`Simplified Management` - Break complex infrastructure into smaller, manageable components that are easier to maintain that are easier to maintain and upate
+
+`Consistent Deployment` - Ensure infrastructure consistency by using tested version-conrolled module configurations across environments.
 
 ## Module Block - Parent Vs. Child Module
 A `parent/calling/root` module references and configures other modules.
